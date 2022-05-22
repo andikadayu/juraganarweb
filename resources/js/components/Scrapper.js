@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 
 class Scrapper extends React.Component {
@@ -15,17 +16,43 @@ class Scrapper extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
         let formData = new FormData(document.querySelector("form[id='formScrap']"));
-
+        Swal.showLoading();
         axios({
             method: "post",
             url: "/api/scrapping",
-            data: formData
+            data: formData,
+            responseType: 'json'
         }).then(function (response) {
+            Swal.close();
             console.log(response);
+            if (response.data.status == 'OK') {
+                Swal.fire({
+                    title: 'Success',
+                    text: response.data.result,
+                    timer: 5000,
+                    icon: 'success',
+                });
+                location.reload();
+            } else {
+                Swal.fire({
+                    title: 'Failed',
+                    text: response.data.result,
+                    timer: 5000,
+                    icon: 'error',
+                });
+                location.reload();
+            }
 
-        }).catch(function (response) {
-            console.log(response);
-
+        }).catch(function (error) {
+            Swal.close();
+            console.log(error);
+            Swal.fire({
+                title: 'Failed',
+                text: 'Scrap has Error Occured',
+                timer: 5000,
+                icon: 'error',
+            });
+            // location.reload();
         });
 
     }
@@ -38,6 +65,7 @@ class Scrapper extends React.Component {
                         <div className="card-body">
                             <form id='formScrap' onSubmit={this.handleSubmit}>
                                 <input className='form-control' type={'hidden'} id='csrf_token_field' name='_token'></input>
+                                <input className='form-control' type={'hidden'} id='user_id_field' name='id_user'></input>
 
                                 <div className="form-group">
                                     <label className="form-label">Link Shopee</label>
