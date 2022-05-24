@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\ShopeeScrap;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 
 class APIController extends Controller
@@ -102,5 +105,100 @@ class APIController extends Controller
             $randomString .= $characters[rand(0, $charactersLength - 1)];
         }
         return strtoupper($randomString) . '-' . rand(1111111, 9999999);
+    }
+
+    public function login(Request $request)
+    {
+        $email = $request->input('email');
+        $password = $request->input('password');
+        if ($email == null || $password == null) {
+            $data['error'] = true;
+            $data['error_msg'] = "Invalid Parameter";
+        } else {
+            $user = User::where('email', '=', $email)
+                ->where('is_active', '=', 1);
+            if ($user->count() > 0) {
+                $row = $user->first();
+                if (Hash::check($password, $row->password)) {
+                    $data['error'] = false;
+                    $data['error_msg'] = null;
+                    $data['data'] = ["name" => $row->name, "email" => $row->email, "id" => Crypt::encryptString($row->id)];
+                } else {
+                    $data['error'] = true;
+                    $data['error_msg'] = "Password Invalid";
+                }
+            } else {
+                $data['error'] = true;
+                $data['error_msg'] = "Email Invalid or User not Active";
+            }
+        }
+        $response = json_encode($data, JSON_PRETTY_PRINT);
+
+        return response($response, 200)
+            ->header('Content-Type', 'application/json');
+    }
+
+    public function cekAktif(Request $request)
+    {
+        $id = $request->input('id');
+        if ($id == null) {
+            $data['error'] = true;
+            $data['error_msg'] = "Invalid Parameter";
+        } else {
+            $user = User::where('id', '=', Crypt::decryptString($id))
+                ->where('is_active', '=', 1)
+                ->count();
+            if ($user > 0) {
+                $data['error'] = false;
+                $data['error_msg'] = null;
+            } else {
+                $data['error'] = true;
+                $data['error_msg'] = "User Not Active";
+            }
+        }
+
+        $response = json_encode($data, JSON_PRETTY_PRINT);
+
+        return response($response, 200)
+            ->header('Content-Type', 'application/json');
+    }
+
+    public function getData(Request $request)
+    {
+        $id = $request->input('id');
+        $date = $request->input('date');
+        if ($id == null && $id == null) {
+            $data['error'] = true;
+            $data['error_msg'] = "Invalid Parameter";
+        } else {
+            if (!is_numeric($id)) {
+                $id = Crypt::decryptString($id);
+                if ($date != null) {
+                    $all = ShopeeScrap::select("url_scrape", "nama_produk", "deskripsi", "cat1", "berat", "minimum_pemesanan", "nomor_etalase", "waktu_preorder", "kondisi", "gambar1", "video1", "sku_name", "status", "jumlah_stok", "harga", "asuransi")
+                        ->where('id_user', '=', $id)
+                        ->where('date_scrape', '=', $date)
+                        ->get();
+                    $count = ShopeeScrap::where('id_user', '=', $id)->where('date_scrape', '=', $date)->count();
+                } else {
+                    $all = ShopeeScrap::select("url_scrape", "nama_produk", "deskripsi", "cat1", "berat", "minimum_pemesanan", "nomor_etalase", "waktu_preorder", "kondisi", "gambar1", "video1", "sku_name", "status", "jumlah_stok", "harga", "asuransi")
+                        ->where('id_user', '=', $id)
+                        ->get();
+                    $count = ShopeeScrap::where('id_user', '=', $id)->count();
+                }
+
+                $data['error'] = false;
+                $data['error_msg'] = null;
+                $data['count'] = $count;
+                $data['data'] = $all;
+            } else {
+                $data['error'] = true;
+                $data['error_msg'] = "Paramater is Invalid";
+            }
+        }
+
+        $response = json_encode($data, JSON_PRETTY_PRINT);
+
+        return response($response, 200)
+            ->header('Content-Type', 'application/json');
     }
 }

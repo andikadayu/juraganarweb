@@ -10,6 +10,7 @@
             </a>
             <!--//nav-link-->
         </li>
+        @if(Auth::user()->role == 'superadmin')
         <li class="nav-item">
             <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
             <a class="nav-link @yield('users-active')" href="{{route('users')}}">
@@ -20,6 +21,7 @@
             </a>
             <!--//nav-link-->
         </li>
+        @endif
         <li class="nav-item">
             <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
             <a class="nav-link @yield('shopee-active')" href="{{route('shopee')}}">
@@ -31,7 +33,17 @@
             <!--//nav-link-->
         </li>
         <!--//nav-item-->
-
+        <li class="nav-item">
+            <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
+            <a class="nav-link" href="{{route('logout')}}"
+                onclick="event.preventDefault();document.getElementById('logout-form').submit();">
+                <span class="nav-icon">
+                    <i class="fas fa-power-off" style="font-size: 18px;"></i>
+                </span>
+                <span class="nav-link-text">Logout</span>
+            </a>
+            <!--//nav-link-->
+        </li>
 
         <!--//nav-item-->
     </ul>
