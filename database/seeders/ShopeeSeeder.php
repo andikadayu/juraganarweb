@@ -14,6 +14,6 @@ class ShopeeSeeder extends Seeder
      */
     public function run()
     {
-        ShopeeScrap::factory()->count(1000)->create();
+        // ShopeeScrap::factory()->count(1000)->create();
     }
 }
