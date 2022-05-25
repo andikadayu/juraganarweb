@@ -25,4 +25,20 @@ class ShopeeScrapController extends Controller
     {
         return view('page.scrapper.form');
     }
+
+    public function delete(Request $request)
+    {
+        $date_scrape = $request->input('date_scrape');
+        $id_user = Auth::user()->id;
+
+        $delete = ShopeeScrap::where('id_user','=',$id_user)
+        ->where('date_scrape','=',$date_scrape)
+        ->delete();
+
+        if ($delete) {
+            return json_encode(['MESSAGE' => 'Data Berhasil Dihapus', 'RESULT' => 'OK']);
+        } else {
+            return json_encode(['MESSAGE' => 'Data Gagal Dihapus', 'RESULT' => 'FAILED']);
+        }
+    }
 }

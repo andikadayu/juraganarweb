@@ -31,7 +31,7 @@
                                 <td>{{$shop->date_scrape}}</td>
                                 <td>{{$shop->jumlah}}</td>
                                 <td>
-                                    <button class="btn btn-sm btn-danger">Delete</button>
+                                    <button class="btn btn-sm btn-danger" onclick="deleteData('{{$shop->date_scrape}}')">Delete</button>
                                 </td>
                             </tr>
                             @endforeach
@@ -46,4 +46,42 @@
     </div>
 </div>
 <!--//app-card-->
+@endsection
+@section('js')
+<script type="text/javascript">
+  function deleteData(date_scrape) {
+    swal({
+        title: 'Apakah anda yakin?',
+        text: `menghapus data ini`,
+        icon: 'warning',
+        buttons: true,
+        dangerMode: true
+    }).then(isAccepted => {
+        if (isAccepted) {
+            $.ajax({
+                url: "{{url()->current().'/delete'}}",
+                headers:{
+                    'x-csrf-token': $('meta[name="csrf-token"]').attr('content')
+                },
+                method: 'POST',
+                dataType: 'json',
+                data: {
+                    date_scrape: date_scrape
+                },
+                success: function(response) {
+                    if (response.RESULT == 'OK') {
+                        return swalMessageSuccess(response.MESSAGE, ok => {
+                            return window.location.reload();
+                        });
+                    } else {
+                        return swalMessageFailed(response.MESSAGE);
+                    }
+                }
+            }).fail(function() {
+                return swalError();
+            })
+        }
+    })
+  }
+</script>
 @endsection
