@@ -37,5 +37,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::group(['middleware' => ['CekAktif']], function () {
         Route::get('/shopee-scrapper', [App\Http\Controllers\ShopeeScrapController::class, 'index'])->name('shopee');
         Route::get('/shopee-scrapper/add', [App\Http\Controllers\ShopeeScrapController::class, 'add'])->name('add_shopee');
+        Route::post('/shopee-scrapper/delete', [App\Http\Controllers\ShopeeScrapController::class, 'delete'])->name('delete_shopee');
     });
 });
