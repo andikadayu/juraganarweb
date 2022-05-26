@@ -38,5 +38,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/shopee-scrapper', [App\Http\Controllers\ShopeeScrapController::class, 'index'])->name('shopee');
         Route::get('/shopee-scrapper/add', [App\Http\Controllers\ShopeeScrapController::class, 'add'])->name('add_shopee');
         Route::post('/shopee-scrapper/delete', [App\Http\Controllers\ShopeeScrapController::class, 'delete'])->name('delete_shopee');
+
+        Route::get('/setting', [App\Http\Controllers\SettingController::class, 'index'])->name('setting');
+        Route::post('/setting/process', [App\Http\Controllers\SettingController::class, 'process'])->name('setting_process');
     });
 });
