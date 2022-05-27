@@ -93,7 +93,7 @@
                                                 id="with_rumus" <?=($setting !=null) ? ($setting->with_rumus) ?
                                             'checked' : null : null ?>>
                                         </div>
-                                        <select name="rumus_value" id="rumus_value" class="form-control">
+                                        <select name="rumus_value" id="rumus_value" class="form-select">
                                             <option value="murah" <?=($setting !=null) ? ($setting->rumus_value ==
                                                 'murah') ?
                                                 'selected' : null : null ?>>Murah</option>

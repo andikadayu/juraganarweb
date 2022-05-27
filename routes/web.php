@@ -41,5 +41,9 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('/setting', [App\Http\Controllers\SettingController::class, 'index'])->name('setting');
         Route::post('/setting/process', [App\Http\Controllers\SettingController::class, 'process'])->name('setting_process');
+
+        Route::get('/rumus', [App\Http\Controllers\RumusController::class, 'index'])->name('rumus');
+        Route::post('/rumus/add', [App\Http\Controllers\RumusController::class, 'add'])->name('add_rumus');
+        Route::post('/rumus/delete', [App\Http\Controllers\RumusController::class, 'delete'])->name('delete_rumus');
     });
 });

@@ -15,7 +15,7 @@ class ShopeeScrapController extends Controller
             ->select('id_user', 'date_scrape', DB::raw('count(*) as jumlah'))
             ->where('id_user', '=', Auth::user()->id)
             ->groupBy('date_scrape')
-            ->orderBy('date_scrape')
+            ->orderBy('date_scrape', 'desc')
             ->cursorPaginate(10);
 
         return view('page.scrapper.index', $data);
@@ -31,9 +31,9 @@ class ShopeeScrapController extends Controller
         $date_scrape = $request->input('date_scrape');
         $id_user = Auth::user()->id;
 
-        $delete = ShopeeScrap::where('id_user','=',$id_user)
-        ->where('date_scrape','=',$date_scrape)
-        ->delete();
+        $delete = ShopeeScrap::where('id_user', '=', $id_user)
+            ->where('date_scrape', '=', $date_scrape)
+            ->delete();
 
         if ($delete) {
             return json_encode(['MESSAGE' => 'Data Berhasil Dihapus', 'RESULT' => 'OK']);

@@ -34,6 +34,16 @@
         </li>
         <li class="nav-item">
             <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
+            <a class="nav-link @yield('rumus-active')" href="{{route('rumus')}}">
+                <span class="nav-icon">
+                    <i class="fas fa-book" style="font-size: 18px;"></i>
+                </span>
+                <span class="nav-link-text">Manage Rumus</span>
+            </a>
+            <!--//nav-link-->
+        </li>
+        <li class="nav-item">
+            <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
             <a class="nav-link @yield('setting-active')" href="{{route('setting')}}">
                 <span class="nav-icon">
                     <i class="fas fa-cog" style="font-size: 18px;"></i>
@@ -43,17 +53,6 @@
             <!--//nav-link-->
         </li>
         <!--//nav-item-->
-        <li class="nav-item">
-            <!--//Bootstrap Icons: https://icons.getbootstrap.com/ -->
-            <a class="nav-link" href="{{route('logout')}}"
-                onclick="event.preventDefault();document.getElementById('logout-form').submit();">
-                <span class="nav-icon">
-                    <i class="fas fa-power-off" style="font-size: 18px;"></i>
-                </span>
-                <span class="nav-link-text">Logout</span>
-            </a>
-            <!--//nav-link-->
-        </li>
 
         <!--//nav-item-->
     </ul>
