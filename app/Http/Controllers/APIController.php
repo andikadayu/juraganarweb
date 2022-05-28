@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ShopeeScrap;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
@@ -49,44 +50,49 @@ class APIController extends Controller
             ]);
 
             if ($response->successful()) {
-                $json = (object)$response->json('data');
+                try {
 
-                $nama = str_replace("'", "", $json->name);
-                $deskripsi = str_replace("'", "", $json->description);
-                $catid = $json->catid;
-                $kondisi = ($json->condition) ? 'Baru' : 'Bekas';
-                $status = ($json->status) ? 'Aktif' : 'Nonaktif';
-                $stok = $json->stock;
-                $harga = substr($json->price_max, 0, -5);
-                $gambar1 = json_encode($json->images);
-                $video1 = ($json->video_info_list != '') ? json_encode($json->video_info_list) : null;
-                $sku = $this->generateSKU($nama);
-                $linkss = "https://shopee.co.id/" . str_replace(" ", "-", $nama) . "-i." . $json->shopid . "." . $json->itemid;
+                    $json = (object)$response->json('data');
 
-                $insert = ShopeeScrap::insert([
-                    'id_user' => $id_user,
-                    'date_scrape' => $dateNow,
-                    'url_scrape' => $linkss,
-                    'nama_produk' => $nama,
-                    'deskripsi' => $deskripsi,
-                    'cat1' => $catid,
-                    'berat' => $berat,
-                    'minimum_pemesanan' => $min,
-                    'nomor_etalase' => $etalase,
-                    'waktu_preorder' => $preorder,
-                    'kondisi' => $kondisi,
-                    'gambar1' => $gambar1,
-                    'video1' => $video1,
-                    'sku_name' => $sku,
-                    'status' => $status,
-                    'jumlah_stok' => $stok,
-                    'harga' => $harga,
-                    'asuransi' => $asuransi
-                ]);
-                if ($insert) {
-                    $successCount++;
+                    $nama = str_replace("'", "", $json->name);
+                    $deskripsi = str_replace("'", "", $json->description);
+                    $catid = $json->catid;
+                    $kondisi = ($json->condition) ? 'Baru' : 'Bekas';
+                    $status = ($json->status) ? 'Aktif' : 'Nonaktif';
+                    $stok = $json->stock;
+                    $harga = substr($json->price_max, 0, -5);
+                    $gambar1 = json_encode($json->images);
+                    $video1 = ($json->video_info_list != '') ? json_encode($json->video_info_list) : null;
+                    $sku = $this->generateSKU($nama);
+                    $linkss = "https://shopee.co.id/" . str_replace(" ", "-", $nama) . "-i." . $json->shopid . "." . $json->itemid;
+
+                    $insert = ShopeeScrap::insert([
+                        'id_user' => $id_user,
+                        'date_scrape' => $dateNow,
+                        'url_scrape' => $linkss,
+                        'nama_produk' => $nama,
+                        'deskripsi' => $deskripsi,
+                        'cat1' => $catid,
+                        'berat' => $berat,
+                        'minimum_pemesanan' => $min,
+                        'nomor_etalase' => $etalase,
+                        'waktu_preorder' => $preorder,
+                        'kondisi' => $kondisi,
+                        'gambar1' => $gambar1,
+                        'video1' => $video1,
+                        'sku_name' => $sku,
+                        'status' => $status,
+                        'jumlah_stok' => $stok,
+                        'harga' => $harga,
+                        'asuransi' => $asuransi
+                    ]);
+                    if ($insert) {
+                        $successCount++;
+                    }
+                } catch (Exception $ex) {
+                    continue;
                 }
-                sleep(1); // Default Sleep 1 Seconds
+                sleep(0.6); // Default Sleep 1 Seconds
             }
         }
 

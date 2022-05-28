@@ -20,7 +20,7 @@
                                 <th>No</th>
                                 <th>Tanggal</th>
                                 <th>Jumlah</th>
-                                <th>Action</th>
+                                <th style="width: 20%">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -31,7 +31,10 @@
                                 <td>{{$shop->date_scrape}}</td>
                                 <td>{{$shop->jumlah}}</td>
                                 <td>
-                                    <button class="btn btn-sm btn-danger" onclick="deleteData('{{$shop->date_scrape}}')">Delete</button>
+                                    <button class="btn btn-sm btn-info"
+                                        onclick="cetakData('{{$shop->date_scrape}}')">Cetak</button>
+                                    <button class="btn btn-sm btn-danger"
+                                        onclick="deleteData('{{$shop->date_scrape}}')">Delete</button>
                                 </td>
                             </tr>
                             @endforeach
@@ -49,7 +52,7 @@
 @endsection
 @section('js')
 <script type="text/javascript">
-  function deleteData(date_scrape) {
+    function deleteData(date_scrape) {
     swal({
         title: 'Apakah anda yakin?',
         text: `menghapus data ini`,
@@ -82,6 +85,20 @@
             })
         }
     })
-  }
+    }
+
+    function cetakData(date_scrape) {
+        swal({
+            title: 'Apakah anda yakin?',
+            text: `mencetak data ini`,
+            icon: 'info',
+            buttons: true,
+            dangerMode: false
+        }).then(isAccepted => {
+            if (isAccepted) {
+                window.open("{{route('export')}}?date_scrape="+date_scrape,'_blank');
+            }
+        });
+    }
 </script>
 @endsection
