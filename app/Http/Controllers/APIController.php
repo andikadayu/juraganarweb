@@ -17,7 +17,6 @@ class APIController extends Controller
         $shopeelink = $request->input('shopeelink');
         $id_user = $request->input('id_user');
         $dateNow = date('Y-m-d');
-        $arrlink = explode(',', $shopeelink);
         $nama = NULL;
         $deskripsi = NULL;
         $catid = 0;
@@ -34,69 +33,67 @@ class APIController extends Controller
         $harga = 12000;
         $asuransi = "optional";
         $linkss = null;
-        $successCount = 0;
-        $countAll = count($arrlink);
-        foreach ($arrlink as $key => $valued) {
-            $values = stripslashes(str_replace('"', '', $valued));
-            $vals = str_replace('?', '.', $values);
-            $param = explode('-i.', $vals);
-            $params = explode('.', $param[1]);
-            $shop_id = $params[0];
-            $item_id = $params[1];
+        $values = stripslashes(str_replace('"', '', $shopeelink));
+        $vals = str_replace('?', '.', $values);
+        $param = explode('-i.', $vals);
+        $params = explode('.', $param[1]);
+        $shop_id = $params[0];
+        $item_id = $params[1];
 
-            $response = Http::accept('application/json')->get('https://shopee.co.id/api/v4/item/get', [
-                'shopid' => $shop_id,
-                'itemid' => $item_id
-            ]);
+        $response = Http::accept('application/json')->get('https://shopee.co.id/api/v4/item/get', [
+            'shopid' => $shop_id,
+            'itemid' => $item_id
+        ]);
 
-            if ($response->successful()) {
-                try {
+        if ($response->successful()) {
+            try {
+                $json = (object)$response->json('data');
 
-                    $json = (object)$response->json('data');
+                $nama = str_replace("'", "", $json->name);
+                $deskripsi = str_replace("'", "", $json->description);
+                $catid = $json->catid;
+                $kondisi = ($json->condition) ? 'Baru' : 'Bekas';
+                $status = ($json->status) ? 'Aktif' : 'Nonaktif';
+                $stok = $json->stock;
+                $harga = substr($json->price_max, 0, -5);
+                $gambar1 = json_encode($json->images);
+                $video1 = ($json->video_info_list != '') ? json_encode($json->video_info_list) : null;
+                $sku = $this->generateSKU($nama);
+                $linkss = "https://shopee.co.id/" . str_replace(" ", "-", $nama) . "-i." . $json->shopid . "." . $json->itemid;
 
-                    $nama = str_replace("'", "", $json->name);
-                    $deskripsi = str_replace("'", "", $json->description);
-                    $catid = $json->catid;
-                    $kondisi = ($json->condition) ? 'Baru' : 'Bekas';
-                    $status = ($json->status) ? 'Aktif' : 'Nonaktif';
-                    $stok = $json->stock;
-                    $harga = substr($json->price_max, 0, -5);
-                    $gambar1 = json_encode($json->images);
-                    $video1 = ($json->video_info_list != '') ? json_encode($json->video_info_list) : null;
-                    $sku = $this->generateSKU($nama);
-                    $linkss = "https://shopee.co.id/" . str_replace(" ", "-", $nama) . "-i." . $json->shopid . "." . $json->itemid;
+                $insert = ShopeeScrap::insert([
+                    'id_user' => $id_user,
+                    'date_scrape' => $dateNow,
+                    'url_scrape' => $linkss,
+                    'nama_produk' => $nama,
+                    'deskripsi' => $deskripsi,
+                    'cat1' => $catid,
+                    'berat' => $berat,
+                    'minimum_pemesanan' => $min,
+                    'nomor_etalase' => $etalase,
+                    'waktu_preorder' => $preorder,
+                    'kondisi' => $kondisi,
+                    'gambar1' => $gambar1,
+                    'video1' => $video1,
+                    'sku_name' => $sku,
+                    'status' => $status,
+                    'jumlah_stok' => $stok,
+                    'harga' => $harga,
+                    'asuransi' => $asuransi
+                ]);
 
-                    $insert = ShopeeScrap::insert([
-                        'id_user' => $id_user,
-                        'date_scrape' => $dateNow,
-                        'url_scrape' => $linkss,
-                        'nama_produk' => $nama,
-                        'deskripsi' => $deskripsi,
-                        'cat1' => $catid,
-                        'berat' => $berat,
-                        'minimum_pemesanan' => $min,
-                        'nomor_etalase' => $etalase,
-                        'waktu_preorder' => $preorder,
-                        'kondisi' => $kondisi,
-                        'gambar1' => $gambar1,
-                        'video1' => $video1,
-                        'sku_name' => $sku,
-                        'status' => $status,
-                        'jumlah_stok' => $stok,
-                        'harga' => $harga,
-                        'asuransi' => $asuransi
-                    ]);
-                    if ($insert) {
-                        $successCount++;
-                    }
-                } catch (Exception $ex) {
-                    continue;
+                if ($insert) {
+                    sleep(2); // Default Sleep 2 Seconds
+                    return json_encode(['status' => 'OK']);
                 }
-                sleep(0.6); // Default Sleep 1 Seconds
+            } catch (Exception $ex) {
+                sleep(2); // Default Sleep 2 Seconds
+                return json_encode(['status' => 'FAILED']);
             }
+        } else {
+            sleep(2); // Default Sleep 2 Seconds
+            return json_encode(['status' => 'FAILED']);
         }
-
-        return json_encode(['status' => 'OK', 'result' => "Scrap Done $successCount/$countAll Berhasil"]);
     }
 
     public function generateSKU($name)
