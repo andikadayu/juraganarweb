@@ -17,7 +17,11 @@ class Scrapper extends React.Component {
         this.setState({ loading: value });
     }
 
-    handleSubmit(event) {
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async handleSubmit(event) {
         event.preventDefault();
 
         this.saveLoading(0);
@@ -40,24 +44,21 @@ class Scrapper extends React.Component {
             formNew.append('_token', _token);
             formNew.append('id_user', id_user);
 
-            setTimeout(async () => {
-                await axios({
-                    method: "post",
-                    url: "/api/scrapping",
-                    data: formNew,
-                    responseType: 'json'
-                }).then(function (response) {
-                    console.log(response);
-                }).catch(function (error) {
-                    console.log(error);
-                })
-                this.saveLoading(current / count * 100);
-                current++;
-
-            }, 2000);
+            await axios({
+                method: "post",
+                url: "/api/scrapping",
+                data: formNew,
+                responseType: 'json'
+            }).then(function (response) {
+                console.log(response);
+            }).catch(function (error) {
+                console.log(error);
+            })
+            this.saveLoading(current / count * 100);
+            this.sleep(2500);
+            current++;
 
         }
-
 
     }
 

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 
+
 class APIController extends Controller
 {
     public function scrapping(Request $request)
@@ -83,16 +84,24 @@ class APIController extends Controller
                 ]);
 
                 if ($insert) {
-                    sleep(2); // Default Sleep 2 Seconds
                     return json_encode(['status' => 'OK']);
                 }
             } catch (Exception $ex) {
-                sleep(2); // Default Sleep 2 Seconds
                 return json_encode(['status' => 'FAILED']);
             }
         } else {
-            sleep(2); // Default Sleep 2 Seconds
             return json_encode(['status' => 'FAILED']);
+        }
+    }
+
+    public function beta(Request $request)
+    {
+        // $url = $request->get('url');
+        $url = "xh-m601-Papan-Modul-Kontrol-Charger-12V-i.41253123.1004457341.sp_atk=66a6a812-6401-4e22-bfd4-5257deac547b";
+        $http = Http::get("https://shopee.co.id/$url");
+        if ($http->successful()) {
+            $html = $http->body();
+            dd($html);
         }
     }
 
