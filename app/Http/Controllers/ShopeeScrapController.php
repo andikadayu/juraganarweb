@@ -143,4 +143,9 @@ class ShopeeScrapController extends Controller
         $path = public_path("assets/export/$nama_file");
         $writer->save($path);
     }
+
+    public function from_file(Request $request)
+    {
+        return view('page.scrapper.form_file');
+    }
 }

@@ -24,6 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::post('scrapping', [App\Http\Controllers\APIController::class, 'scrapping']);
+Route::post('fromfile', [App\Http\Controllers\APIController::class, 'fromfile']);
 
 Route::get('scrape/beta', [App\Http\Controllers\APIController::class, 'beta']);
 

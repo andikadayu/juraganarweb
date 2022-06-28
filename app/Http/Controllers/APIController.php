@@ -94,6 +94,61 @@ class APIController extends Controller
         }
     }
 
+    public function fromfile(Request $request)
+    {
+        $id_user = $request->input('id_user');
+        $dateNow = date('Y-m-d');
+        if ($request->hasFile('file')) {
+            $files = $request->file('file');
+            foreach ($files as $file) {
+                // read file json
+                $jsons = json_decode(file_get_contents($file));
+                foreach ($jsons as $json) {
+
+                    $nama = str_replace("'", "", $json->name);
+                    $deskripsi = str_replace("'", "", $json->description);
+                    $catid = 0;
+                    $kondisi = 'Baru';
+                    $status =  'Aktif';
+                    $stok = $json->stock;
+                    $harga = $json->price;
+                    $gambar1 = json_encode($json->images);
+                    $video1 = null;
+                    $sku = $this->generateSKU($nama);
+                    $linkss = "https://shopee.co.id/" . str_replace(" ", "-", $nama);
+                    $berat = 0;
+                    $min = 1;
+                    $etalase = NULL;
+                    $preorder = 1;
+                    $asuransi = "optional";
+                    $insert = ShopeeScrap::insert([
+                        'id_user' => $id_user,
+                        'date_scrape' => $dateNow,
+                        'url_scrape' => $linkss,
+                        'nama_produk' => $nama,
+                        'deskripsi' => $deskripsi,
+                        'cat1' => $catid,
+                        'berat' => $berat,
+                        'minimum_pemesanan' => $min,
+                        'nomor_etalase' => $etalase,
+                        'waktu_preorder' => $preorder,
+                        'kondisi' => $kondisi,
+                        'gambar1' => $gambar1,
+                        'video1' => $video1,
+                        'sku_name' => $sku,
+                        'status' => $status,
+                        'jumlah_stok' => $stok,
+                        'harga' => $harga,
+                        'asuransi' => $asuransi
+                    ]);
+                }
+            }
+            return json_encode(['RESULT' => 'SUCCESS']);
+        } else {
+            return json_encode(['RESULT' => 'FAILED']);
+        }
+    }
+
     public function beta(Request $request)
     {
         // $url = $request->get('url');

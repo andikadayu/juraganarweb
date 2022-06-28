@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 
 class Scrapper extends React.Component {
@@ -37,6 +38,8 @@ class Scrapper extends React.Component {
         let count = allLink.length;
         let current = 1;
 
+        let urlSuccess = document.getElementById('btnBack').getAttribute('href');
+
         for (let index = 0; index < count; index++) {
             const mylink = allLink[index];
             let formNew = new FormData();
@@ -59,6 +62,18 @@ class Scrapper extends React.Component {
             current++;
 
         }
+
+        this.setState({ isSubmit: false });
+        this.saveLoading(0);
+
+        Swal.fire({
+            title: 'Success',
+            text: 'Data has been saved',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then(function () {
+            window.location.href = urlSuccess;
+        }.bind(this));
 
     }
 

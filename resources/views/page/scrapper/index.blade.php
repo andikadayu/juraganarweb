@@ -13,6 +13,8 @@
                 </div>
                 @endif
                 <a href="{{ url()->current().'/add' }}" class="btn btn-success"><i class="fa fa-plus"></i> Scrape</a>
+                <a href="{{url()->current().'/from-file'}}" class="btn btn-info"><i class="fa fa-file"></i> From
+                    File</a>
                 <div class="table-responsive mt-3">
                     <table class="table table-hover table-bordered" style="white-space: nowrap">
                         <thead>
